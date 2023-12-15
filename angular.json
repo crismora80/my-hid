@@ -17,7 +17,7 @@
             "outputPath": "www",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["zone.js", "src/polyfills.ts"],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
@@ -78,11 +78,11 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "browserTarget": "app:build",
-            "sourceMap": {
-              "scripts": true,
-              "styles": true,
-              "vendor": true
-            }
+            // "sourceMap": {
+            //   "scripts": true,
+            //   "styles": true,
+            //   "vendor": true
+            // }
           },
           "configurations": {
             "production": {
@@ -103,7 +103,7 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "main": "src/test.ts",
-            "polyfills": "src/polyfills.ts",
+            "polyfills": ["zone.js","src/polyfills.ts"],
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
             "styles": [],
