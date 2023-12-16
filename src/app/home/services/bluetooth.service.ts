@@ -1,46 +1,43 @@
-import { Injectable, NgZone } from "@angular/core";
-import { BleClient } from '@capacitor-community/bluetooth-le';
+import { Injectable } from "@angular/core";
+import { BleClient, ScanResult } from '@capacitor-community/bluetooth-le';
+import { Subject } from "rxjs";
 import { GPSService } from "./gps.service";
 
 @Injectable({providedIn: 'root'})
 export class BluetoothService {
-    devices: any[] = [];
+	private scanDevicesSubject = new Subject<ScanResult>();
+	scanDevices$ = this.scanDevicesSubject.asObservable();
 
     constructor(
-		private ngZone: NgZone,
         private gpsSvc: GPSService
 	) {}
 
     async enableBlueTooth() {
         await BleClient.initialize();
-		BleClient.isLocationEnabled().then(
-			() => this.enableBlueTooth(),
-			() => this.gpsSvc.openGPS().then(() => this.enableBlueTooth())
-		);
+		const isLocationEnabled = await BleClient.isLocationEnabled();
+		if (!isLocationEnabled) {
+		  await this.gpsSvc.openGPS();
+		}
+		const isBluetoothEnabled = await BleClient.isEnabled();
+		if (!isBluetoothEnabled) {
+			await BleClient.requestEnable();
+		}
 
 		BleClient.isEnabled().then(
 			() => {
 				console.log('opened');
-				this.scanForDevices();
-			},
-			() => {
-				console.log('closed');
-				BleClient.enable().then(() => this.scanForDevices());
+				return this.scanForDevices();
 			}
 		);
 	}
 
-	private scanForDevices() {
-		this.devices = []; // clear list
-
+	private async scanForDevices() {
 		BleClient
-			.requestLEScan({}, (device) => this.onDeviceDiscovered(device));
+			.requestLEScan({allowDuplicates: false}, (device: ScanResult) => this.onDeviceDiscovered(device));
 	}
 
-	private onDeviceDiscovered(device): void {
-		this.ngZone.run(() => {
-			this.devices.push(device);
-			console.log(device);
-		});
+	private onDeviceDiscovered(device: ScanResult): void {
+		this.scanDevicesSubject.next(device);
+		console.log(device.localName);
 	}
 }

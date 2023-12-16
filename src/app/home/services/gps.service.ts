@@ -1,80 +1,59 @@
 import { Injectable } from '@angular/core';
-// import {
-// 	AndroidPermissionResponse,
-// 	AndroidPermissions,
-// } from '@ionic-native/android-permissions/ngx';
-// import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
-// import { OpenNativeSettings } from '@ionic-native/open-native-settings/ngx';
+import { Geolocation } from '@capacitor/geolocation';
+import { AndroidSettings, IOSSettings, NativeSettings } from 'capacitor-native-settings';
+import { AndroidPermissions } from '@awesome-cordova-plugins/android-permissions/ngx';
+import { LocationAccuracy } from '@ionic-native/location-accuracy/ngx';
 
 @Injectable({providedIn: 'root'})
 export class GPSService {
 	constructor(
-		// private androidPermissions: AndroidPermissions,
-		// private locationAccuracy: LocationAccuracy,
-		// private openNativeSettings: OpenNativeSettings
+		private androidPermissions: AndroidPermissions,
+		private locationAccuracy: LocationAccuracy
 	) {}
 
 	openGPS(): Promise<void> {
-		return new Promise((resolve, reject) => { })
-		// return this.androidPermissions
-		// 	.checkPermission(
-		// 		this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
-		// 	)
-		// 	.then(
-		// 		(result) => {
-		// 			if (result.hasPermission) {
-		// 				//If having permission show 'Turn On GPS' dialogue
-		// 				return this.askToTurnOnGPS();
-		// 			} else {
-		// 				//If not having permission ask for permission
-		// 				return this.requestGPSPermission();
-		// 			}
-		// 		},
-		// 		(err) => {
-		// 			alert(err);
-		// 		}
-		// 	);
+		return this.androidPermissions
+		.checkPermission(
+		  this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
+		)
+		.then(
+		  (result) => {
+			if (result.hasPermission) {
+			  return this.requestToSwitchOnGPS();
+			} else {
+			  return this.askGPSPermission();
+			}
+		  },
+		  (err) => {
+			alert(err);
+		  }
+		);
 	}
-
-	// private requestGPSPermission(): Promise<void> {
-	// 	return this.locationAccuracy
-	// 		.canRequest()
-	// 		.then((canRequest: boolean) => {
-	// 			if (!canRequest) {
-	// 				this.openNativeSettings.open('application_details');
-	// 			} else {
-	// 				//Show 'GPS Permission Request' dialogue
-	// 				return this.androidPermissions
-	// 					.requestPermission(
-	// 						this.androidPermissions.PERMISSION
-	// 							.ACCESS_COARSE_LOCATION
-	// 					)
-	// 					.then(
-	// 						(response: AndroidPermissionResponse) => {
-	// 							return this.askToTurnOnGPS();
-	// 						},
-	// 						(error) => {
-	// 							//Show alert if user click on 'No Thanks'
-	// 							alert(
-	// 								'requestPermission Error requesting location permissions ' +
-	// 									error
-	// 							);
-	// 						}
-	// 					);
-	// 			}
-	// 		});
-	// }
-
-	// private askToTurnOnGPS(): Promise<void> {
-	// 	return this.locationAccuracy
-	// 		.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY)
-	// 		.then(
-	// 			() => {},
-	// 			(error) =>
-	// 				alert(
-	// 					'Error requesting location permissions ' +
-	// 						JSON.stringify(error)
-	// 				)
-	// 		);
-	// }
+	askGPSPermission(): Promise<void> {
+	  return this.locationAccuracy.canRequest().then((canRequest: boolean) => {
+		if (canRequest) {
+		} else {
+		  this.androidPermissions
+			.requestPermission(
+			  this.androidPermissions.PERMISSION.ACCESS_COARSE_LOCATION
+			)
+			.then(
+			  () => {
+				this.requestToSwitchOnGPS();
+			  },
+			  (error) => {
+				alert(error);
+			  }
+			);
+		}
+	  });
+	}
+	requestToSwitchOnGPS(): Promise<void> {
+	  return this.locationAccuracy
+		.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY)
+		.then(
+		  () => {console.log('accepteddd')},
+		  (error) => alert(JSON.stringify(error))
+		);
+	}
 }
