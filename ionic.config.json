@@ -1,7 +1,8 @@
 {
   "name": "my_hid",
   "integrations": {
-    "cordova": {}
+    "cordova": {},
+    "capacitor": {}
   },
   "hooks": {
     "build:after": "./attach-source-maps.js"

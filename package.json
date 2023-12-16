@@ -10,7 +10,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "android": "npx cap run android"
+    "android": "ionic capacitor build android --no-open && npx cap run android"
   },
   "private": true,
   "dependencies": {
@@ -22,7 +22,11 @@
     "@angular/router": "~17.0.0",
     "@capacitor-community/bluetooth-le": "^3.1.1",
     "@capacitor/android": "^5.6.0",
-    "@capacitor/core": "^5.6.0",
+    "@capacitor/app": "5.0.6",
+    "@capacitor/core": "5.6.0",
+    "@capacitor/haptics": "5.0.6",
+    "@capacitor/keyboard": "5.0.7",
+    "@capacitor/status-bar": "5.0.6",
     "@ionic/angular": "^7.0.0",
     "rxjs": "^7.0.0",
     "tslib": "^2.0.0",
@@ -38,8 +42,9 @@
     "@angular/compiler": "~17.0.0",
     "@angular/compiler-cli": "~17.0.0",
     "@angular/language-service": "~17.0.0",
-    "@capacitor/cli": "^5.6.0",
+    "@capacitor/cli": "5.6.0",
     "@ionic/angular-toolkit": "^4.0.0",
+    "@ionic/cli": "^7.1.5",
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "6.14.0",
     "@typescript-eslint/parser": "6.14.0",
